@@ -7,19 +7,21 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Services.Database.Entity;
 
 namespace GameWeb
 {
   public class Startup
   {
+    private readonly IConfiguration _config;
     public Startup(IConfiguration configuration)
     {
-      Configuration = configuration;
+      _config = configuration;
     }
-
-    public IConfiguration Configuration { get; }
+    
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -31,7 +33,7 @@ namespace GameWeb
         options.MinimumSameSitePolicy = SameSiteMode.None;
       });
 
-
+      services.AddDbContext<GameWebDbContext>(options => options.UseSqlServer(_config.GetConnectionString("GameWebDatabase")));
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
     }
 
